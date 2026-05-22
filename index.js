@@ -13,13 +13,14 @@ const port = 3000;
 const saltRounds= 10;
 
 dotenv.config();
+
 app.use(cors({ 
     origin: "http://localhost:5173", credentials: true 
 }));
 
 app.use(express.json());
 app.use(session({
-    secret: 'JagaJaga',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -27,8 +28,7 @@ app.use(session({
         secure: false
     }
   }));
-  
-app.use(passport.authenticate('session'));
+
 app.use(passport.session())
 
 
@@ -47,6 +47,20 @@ app.get("/expenses", async (req,res) => {
         res.json({ success: true, expenses: expenses.rows })
     } else {
         res.status(401).json({ success: false })
+    }
+})
+
+app.get("/expenses/summary", async(req,res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ success: false })
+    };
+    const user = parseInt(req.user.id);
+
+    try {
+        const sum= await db.query("SELECT category, type, SUM(amount) as total FROM expenses WHERE user_id=$1 GROUP BY category, type", [user]);
+        res.json({success:true, summary: sum.rows});
+    } catch(err) {
+        console.error(err);
     }
 })
 
@@ -130,6 +144,16 @@ app.post("/logout", (req,res) => {
         res.json({ success: true });
     });
 })
+
+app.delete("/expenses/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ success: false })
+    };
+    const id = parseInt(req.params.id); 
+    const userId = parseInt(req.user.id);
+    await db.query("DELETE FROM expenses WHERE id=$1 AND user_id=$2", [id, userId]);
+    res.json({ success: true });
+  });
 
 passport.serializeUser((user,cb) => {
     cb(null,user)
