@@ -86,17 +86,17 @@ app.post("/expenses", async(req,res) => {
 })
 
 app.post("/register", async (req,res) => {
-    const email= req.body.email;
+    const username= req.body.username;
     const password= req.body.password;
 
     try {
-        const task = await db.query("SELECT * FROM users WHERE email=$1", [email]);
+        const task = await db.query("SELECT * FROM users WHERE email=$1", [username]);
 
         if(task.rows.length > 0) {
             res.status(500).send("Email already exists");
         } else {
             bcrypt.hash(password, saltRounds, async (err,hash) => {
-               await db.query("INSERT INTO users(email,password) VALUES($1,$2)", [email, hash]);
+               await db.query("INSERT INTO users(email,password) VALUES($1,$2)", [username, hash]);
                 res.json({success:true});
             })
         }
