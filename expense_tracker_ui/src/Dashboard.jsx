@@ -27,7 +27,7 @@ function Dashboard() {
     }
 
     return (
-        <div>
+        <div className="dash-container">
             <ExpenseForm setItems={setItems} />
             <FilterBar setFilter={setFilter} />
             <ExpenseList items={items} filter={filter} onDelete={handleDelete} />

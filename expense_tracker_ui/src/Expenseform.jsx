@@ -41,12 +41,13 @@ function ExpenseForm(props) {
             <input type="text" onChange={handleText} name="title" id="title" value={form.title}/>
         </div>
         <div>
-        <label htmlFor="amount">Amount</label>
+        <label htmlFor="amount">Amount(£)</label>
         <input type="text"  onChange={handleText} name="amount" id="amount" value={form.amount} />
         </div>
         <div>
             <label htmlFor="cat">Category</label>
             <select name="category" onChange={handleText} value={form.category} id="cat">
+                <option value=""></option>
                 <option value="food">Food</option>
                 <option value="transport">Transport</option>
                 <option value="housing">Housing</option>
@@ -56,6 +57,7 @@ function ExpenseForm(props) {
             </select>
         </div>
         <div>
+            <label htmlFor="type">Type</label>
             <select name="type" onChange={handleText} value={form.type} id="type">
                 <option value="expense">Expense</option>
                 <option value="income">Income</option>

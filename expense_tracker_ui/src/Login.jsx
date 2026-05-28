@@ -44,7 +44,7 @@ function Login() {
     return(
     <form className="form">
         <div className="header">
-        <h1>Welcome to the TaskManager</h1>
+        <h1>Expense Tracker</h1>
         </div>
 
         <div className="container">
