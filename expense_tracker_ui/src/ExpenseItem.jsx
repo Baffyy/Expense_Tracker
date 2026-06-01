@@ -2,7 +2,7 @@ import axios from "axios";
 
 function ExpenseItem(props) {
     async function handleDelete() {
-        await axios.delete(`http://localhost:3000/expenses/${props.id}`, { withCredentials: true });
+        await axios.delete(`/expenses/${props.id}`, { withCredentials: true });
         props.onDelete(props.id);
     }
 

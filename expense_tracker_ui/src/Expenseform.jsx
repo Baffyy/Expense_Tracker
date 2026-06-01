@@ -27,11 +27,12 @@ function ExpenseForm(props) {
         if (form.title === "" || form.amount === "" || form.category === "") {
             setIsAccepted(false)
     } else {
-            const data= await axios.post("http://localhost:3000/expenses", form, { withCredentials: true });
+            const data= await axios.post("/expenses", form, { withCredentials: true });
             props.setItems(prevItems => {
                 return [...prevItems, {...form, id: data.data.id}]
             })
             setForm({ title: "", amount: "", category: "", type:"expense" })
+            setIsAccepted(true)
     }
     }
 

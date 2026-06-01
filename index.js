@@ -7,29 +7,45 @@ import passport from "passport";
 import {Strategy} from "passport-local"
 import cors from "cors";
 import connectPgSimple from "connect-pg-simple";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
-const port = 3000;
-const saltRounds= 10;
+const port = process.env.PORT;
+const saltRounds= process.env.SALTROUNDS;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PgSession = connectPgSimple(session);
+
 
 dotenv.config();
 
-app.use(cors({ 
-    origin: "http://localhost:5173", credentials: true 
-}));
-
 app.use(express.json());
 app.use(session({
+    store: new PgSession({
+        conObject: {
+            user: process.env.DB_USER,
+            host: process.env.DB_HOST,
+            database: process.env.DB_DATABASE,
+            password: process.env.DB_PASSWORD,
+            port: process.env.DB_PORT,
+        },
+        createTableIfMissing: true
+    }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,
-        secure: false
+        secure: true
     }
-  }));
+}));
 
 app.use(passport.session())
+
+app.use(express.static(path.join(__dirname, "../expense-tracker_ui/dist")));
+
+app.set("trust proxy", 1);
 
 
 const db = new Pool({
@@ -161,6 +177,10 @@ passport.serializeUser((user,cb) => {
 
 passport.deserializeUser((user,cb) => {
     cb(null,user)
+});
+
+app.get("/*splat", (req, res) => {
+    res.sendFile(path.join(__dirname, "../expense-tracker-ui/dist/index.html"));
 });
 
 app.listen(port, () => {

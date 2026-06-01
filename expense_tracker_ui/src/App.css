@@ -366,6 +366,7 @@ form:not(.form) ~ div:has(button) {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  width: 200px;
   margin-bottom: 8px;
   transition: border-color var(--transition), transform var(--transition);
   animation: fadeUp 0.25s ease both;
@@ -486,6 +487,12 @@ hr {
   margin: 1.5rem 0;
 }
 
+.chart-section canvas {
+  max-width: 350px;
+  margin: 0 auto;
+  display: block;
+}
+
 /* ── ANIMATIONS ──────────────────────────────────────────── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
@@ -503,6 +510,6 @@ hr {
   .summary-cards { grid-template-columns: 1fr; }
   form:not(.form) { grid-template-columns: 1fr; }
   form:not(.form) > div:last-of-type { grid-column: 1; }
-  .container, .register-container { padding: 1.8rem 1.4rem; }
+  .container, .register-container { padding: 1rem 1rem; }
   nav { padding: 1rem; }
 }

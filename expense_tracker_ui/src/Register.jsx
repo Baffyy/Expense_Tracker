@@ -17,7 +17,7 @@ function Register() {
         event.preventDefault();
 
         try {
-            await axios.post("http://localhost:3000/register", inputText, { withCredentials: true })
+            await axios.post("/register", inputText, { withCredentials: true })
             navigate("/")
         } catch(error) {
            setIsNotRegistered(false);

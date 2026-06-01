@@ -8,14 +8,13 @@ function ExpenseList(props) {
     });
 
     return (
-        <div>
+        <div className="expense-grid">
             {filtered.map(item => (
                 <ExpenseItem
                     key={item.id}
                     id={item.id}
                     title={item.title}
                     amount={item.amount}
-                    category={item.category}
                     type={item.type}
                     onDelete={props.onDelete}
                 />
