@@ -43,7 +43,7 @@ app.use(session({
 
 app.use(passport.session())
 
-app.use(express.static(path.join(__dirname, "./expense_tracker_ui")));
+app.use(express.static(path.join(__dirname, "expense_tracker_ui")));
 
 app.set("trust proxy", 1);
 
@@ -177,7 +177,7 @@ passport.deserializeUser((user,cb) => {
 });
 
 app.get("/*splat", (req, res) => {
-    res.sendFile(path.join(__dirname, "../expense-tracker-ui/dist/index.html"));
+    res.sendFile(path.join(__dirname, "expense_tracker_ui/dist/index.html"));
 });
 
 app.listen(port, () => {
