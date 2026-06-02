@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 
 const app = express();
 const port = process.env.PORT;
-const saltRounds= process.env.SALTROUNDS;
+const saltRounds= parseInt(process.env.SALTROUNDS);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PgSession = connectPgSimple(session);
@@ -43,17 +43,14 @@ app.use(session({
 
 app.use(passport.session())
 
-app.use(express.static(path.join(__dirname, "../expense-tracker_ui/dist")));
+app.use(express.static(path.join(__dirname, "./expense_tracker_ui")));
 
 app.set("trust proxy", 1);
 
 
 const db = new Pool({
-    host: process.env.DB_HOST,
-    user:process.env.DB_USER,
-    database: process.env.DB_DATABASE,
-    password:process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 })
 
 app.get("/expenses", async (req,res) => {
