@@ -132,7 +132,7 @@ passport.use(new Strategy(async function verify(username: string, password:strin
         const result = await db.query("SELECT * FROM users WHERE email=$1", [username]);
         if (result.rows.length > 0) {
             const user = result.rows[0];
-            bcrypt.compare(password, user.password, (err: string, result:string) => {
+            bcrypt.compare(password, user.password, (err, result) => {
                 if (err) return cb(err);
                 return result ? cb(null, user) : cb(null, false);
             })
