@@ -13,18 +13,18 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
-const saltRounds = parseInt(process.env.SALTROUNDS);
+const saltRounds = parseInt(process.env.SALTROUNDS!);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PgSession = connectPgSimple(session);
 
-// ── must be first ────────────────────────────────
+
 app.set("trust proxy", 1);
 app.use(express.json());
 
 app.use(session({
     store: new PgSession({
-        conString: process.env.DATABASE_URL,  // fix — was using individual credentials
+        conString: process.env.DATABASE_URL,  
         createTableIfMissing: true
     }),
     secret: process.env.SESSION_SECRET,
@@ -127,12 +127,12 @@ app.delete("/expenses/:id", async (req, res) => {
     }
 });
 
-passport.use(new Strategy(async function verify(username, password, cb) {
+passport.use(new Strategy(async function verify(username: string, password:string | number, cb) {
     try {
         const result = await db.query("SELECT * FROM users WHERE email=$1", [username]);
         if (result.rows.length > 0) {
             const user = result.rows[0];
-            bcrypt.compare(password, user.password, (err, result) => {
+            bcrypt.compare(password, user.password, (err: string, result:string) => {
                 if (err) return cb(err);
                 return result ? cb(null, user) : cb(null, false);
             })
@@ -144,10 +144,9 @@ passport.use(new Strategy(async function verify(username, password, cb) {
     }
 }))
 
-passport.serializeUser((user, cb) => { cb(null, user) });
-passport.deserializeUser((user, cb) => { cb(null, user) });
+passport.serializeUser((user: string, cb) => { cb(null, user) });
+passport.deserializeUser((user:string, cb) => { cb(null, user) });
 
-// catch-all must be last
 app.get("/*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "expense_tracker_ui/dist/index.html"));
 });
