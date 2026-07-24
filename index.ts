@@ -127,7 +127,7 @@ app.delete("/expenses/:id", async (req, res) => {
     }
 });
 
-passport.use(new Strategy(async function verify(username: string, password:string | number, cb) {
+passport.use(new Strategy(async function verify(username: string, password:string, cb) {
     try {
         const result = await db.query("SELECT * FROM users WHERE email=$1", [username]);
         if (result.rows.length > 0) {

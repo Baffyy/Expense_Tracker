@@ -1,4 +1,15 @@
 import axios from "axios";
+import React from "react";
+
+interface ExpenseItemProps {
+    id: number;
+    title: string;
+    category: string;
+    type: "income" | "expense";
+    amount: number;
+    onDelete: (id: number) => void;
+  }
+  
 
 function ExpenseItem(props) {
     async function handleDelete() {
