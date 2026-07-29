@@ -1,5 +1,6 @@
 import ExpenseItem from "./ExpenseItem";
 
+
 function ExpenseList(props) {
     const filtered = props.items.filter(item => {
         if (props.filter === "all") return true;

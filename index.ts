@@ -9,6 +9,14 @@ import connectPgSimple from "connect-pg-simple";
 import path from "path";
 import { fileURLToPath } from "url";
 
+interface User {
+    id: number;
+    email: string;
+    password: string;
+}
+
+
+
 dotenv.config();
 
 const app = express();
@@ -27,7 +35,7 @@ app.use(session({
         conString: process.env.DATABASE_URL,  
         createTableIfMissing: true
     }),
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -48,7 +56,7 @@ app.use(express.static(path.join(__dirname, "expense_tracker_ui/dist")));
 
 app.get("/expenses", async (req, res) => {
     if (req.isAuthenticated()) {
-        const user = parseInt(req.user.id);
+        const user = req.user.id;
         const expenses = await db.query("SELECT * FROM expenses WHERE user_id=$1", [user]);
         res.json({ success: true, expenses: expenses.rows })
     } else {
@@ -56,9 +64,19 @@ app.get("/expenses", async (req, res) => {
     }
 })
 
+declare global {
+    namespace Express {
+      interface User {
+        id: number;
+        email: string;
+        password: string;
+      }
+    }
+  }
+
 app.get("/expenses/summary", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ success: false });
-    const user = parseInt(req.user.id);
+    const user = req.user.id;
     try {
         const sum = await db.query("SELECT category, type, SUM(amount) as total FROM expenses WHERE user_id=$1 GROUP BY category, type", [user]);
         res.json({ success: true, summary: sum.rows });
@@ -71,7 +89,7 @@ app.post("/expenses", async (req, res) => {
     const { title, amount, category, type } = req.body;
     try {
         if (req.isAuthenticated()) {
-            const user = parseInt(req.user.id);
+            const user = req.user.id;
             const expense = await db.query(
                 "INSERT INTO expenses(title,amount,category,type,user_id) VALUES($1,$2,$3,$4,$5) RETURNING id",
                 [title, amount, category, type, user]
@@ -117,7 +135,7 @@ app.post("/logout", (req, res, next) => {
 app.delete("/expenses/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ success: false });
     const id = parseInt(req.params.id);
-    const userId = parseInt(req.user.id);
+    const userId = req.user.id;
     try {
         await db.query("DELETE FROM expenses WHERE id=$1 AND user_id=$2", [id, userId]);
         res.json({ success: true });
@@ -144,8 +162,8 @@ passport.use(new Strategy(async function verify(username: string, password:strin
     }
 }))
 
-passport.serializeUser((user: string, cb) => { cb(null, user) });
-passport.deserializeUser((user:string, cb) => { cb(null, user) });
+passport.serializeUser((user: any, cb) => { cb(null, user) });
+passport.deserializeUser((user: any, cb) => { cb(null, user) });
 
 app.get("/*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "expense_tracker_ui/dist/index.html"));
